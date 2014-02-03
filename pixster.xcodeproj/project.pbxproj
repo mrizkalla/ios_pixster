@@ -30,6 +30,8 @@
 		42B0E09317A82E2E00BACB2C /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 42B0E08817A82E2E00BACB2C /* AFURLConnectionOperation.m */; };
 		42B0E09417A82E2E00BACB2C /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 42B0E08A17A82E2E00BACB2C /* AFXMLRequestOperation.m */; };
 		42B0E09517A82E2E00BACB2C /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 42B0E08C17A82E2E00BACB2C /* UIImageView+AFNetworking.m */; };
+		A51CE2BC189F49D700AA8267 /* PhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A51CE2BB189F49D700AA8267 /* PhotoCell.m */; };
+		A51CE2BE189F49F500AA8267 /* PhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51CE2BD189F49F500AA8267 /* PhotoCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +83,9 @@
 		42B0E08A17A82E2E00BACB2C /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		42B0E08B17A82E2E00BACB2C /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		42B0E08C17A82E2E00BACB2C /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
+		A51CE2BA189F49D700AA8267 /* PhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCell.h; sourceTree = "<group>"; };
+		A51CE2BB189F49D700AA8267 /* PhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCell.m; sourceTree = "<group>"; };
+		A51CE2BD189F49F500AA8267 /* PhotoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +153,9 @@
 				42B0DFF617A81E6200BACB2C /* SearchViewController.m */,
 				42B0DFF717A81E6200BACB2C /* SearchViewController.xib */,
 				42B0E07917A82E2E00BACB2C /* AFNetworking */,
+				A51CE2BA189F49D700AA8267 /* PhotoCell.h */,
+				A51CE2BB189F49D700AA8267 /* PhotoCell.m */,
+				A51CE2BD189F49F500AA8267 /* PhotoCell.xib */,
 			);
 			path = pixster;
 			sourceTree = "<group>";
@@ -285,6 +293,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A51CE2BE189F49F500AA8267 /* PhotoCell.xib in Resources */,
 				42B0DFD117A81E2800BACB2C /* InfoPlist.strings in Resources */,
 				42B0DFD917A81E2800BACB2C /* Images.xcassets in Resources */,
 				42B0DFF917A81E6200BACB2C /* SearchViewController.xib in Resources */,
@@ -316,6 +325,7 @@
 				42B0DFF817A81E6200BACB2C /* SearchViewController.m in Sources */,
 				42B0E09017A82E2E00BACB2C /* AFJSONRequestOperation.m in Sources */,
 				42B0DFD317A81E2800BACB2C /* main.m in Sources */,
+				A51CE2BC189F49D700AA8267 /* PhotoCell.m in Sources */,
 				42B0E09217A82E2E00BACB2C /* AFPropertyListRequestOperation.m in Sources */,
 				42B0E09117A82E2E00BACB2C /* AFNetworkActivityIndicatorManager.m in Sources */,
 			);
@@ -516,6 +526,7 @@
 				42B0DFF117A81E2800BACB2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		42B0DFF217A81E2800BACB2C /* Build configuration list for PBXNativeTarget "pixsterTests" */ = {
 			isa = XCConfigurationList;
@@ -524,6 +535,7 @@
 				42B0DFF417A81E2800BACB2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

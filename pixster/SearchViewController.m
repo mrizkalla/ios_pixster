@@ -9,10 +9,15 @@
 #import "SearchViewController.h"
 #import "UIImageView+AFNetworking.h"
 #import "AFNetworking.h"
+#import "PhotoCell.h"
 
 @interface SearchViewController ()
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
 @property (nonatomic, strong) NSMutableArray *imageResults;
+@property (nonatomic, strong) NSString *searchText;
+
+- (void) doImageQuery:(NSString *)withString fromIndex:(int)index;
 
 @end
 
@@ -31,6 +36,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // register the custom cell NIB
+    UINib *customNib = [UINib nibWithNibName:@"PhotoCell" bundle:nil];
+    [self.collectionView registerNib:customNib forCellWithReuseIdentifier:@"PhotoCell"];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -41,75 +51,41 @@
 
 #pragma mark - UITableView data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)aTableView {
-    // Return the number of sections.
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)aTableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
     return [self.imageResults count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    static NSString *CellIdentifier = @"CellIdentifier";
-    
-    // Dequeue or create a cell of the appropriate type.
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    UIImageView *imageView = nil;
-    const int IMAGE_TAG = 1;
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.tag = IMAGE_TAG;
-        [cell.contentView addSubview:imageView];
-    } else {
-        imageView = (UIImageView *)[cell.contentView viewWithTag:IMAGE_TAG];
+- (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
+    return 1;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    // Load more if user scrolled to bottom
+    if (indexPath.row == self.imageResults.count - 1) {
+        [self doImageQuery:self.searchText fromIndex:[self.imageResults count]];
     }
     
-    // Clear the previous image
-    imageView.image = nil;
-    [imageView setImageWithURL:[NSURL URLWithString:[self.imageResults[indexPath.row] valueForKeyPath:@"url"]]];
-    
+    PhotoCell *cell = [cv dequeueReusableCellWithReuseIdentifier:@"PhotoCell" forIndexPath:indexPath];
+    cell.imageView.image = nil;
+    //cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    //cell.imageView.clipsToBounds = YES;
+    [cell.imageView setImageWithURL:[NSURL URLWithString:[self.imageResults[indexPath.row] valueForKeyPath:@"url"]]];
+
     return cell;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 300;
-}
-
-#pragma mark - UISearchDisplay delegate
-
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller {
-    [self.imageResults removeAllObjects];
-    [self.searchDisplayController.searchResultsTableView reloadData];
-}
-
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
-{
-    return NO;
-}
 
 #pragma mark - UISearchBar delegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [searchBar setShowsCancelButton:NO animated:YES];
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%@", [searchBar.text stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    self.searchText = [searchBar.text stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    [self.imageResults removeAllObjects];
+    [self doImageQuery:self.searchText fromIndex:[self.imageResults count]];
     
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        id results = [JSON valueForKeyPath:@"responseData.results"];
-        if ([results isKindOfClass:[NSArray class]]) {
-            [self.imageResults removeAllObjects];
-            [self.imageResults addObjectsFromArray:results];
-            [self.searchDisplayController.searchResultsTableView reloadData];
-        }
-    } failure:nil];
-    
-    [operation start];
+    [self.view endEditing:YES];
+
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
@@ -122,4 +98,34 @@
     return YES;
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+
+    //CGSize retval = photo.thumbnail.size.width > 0 ? photo.thumbnail.size : CGSizeMake(100, 100);
+    CGFloat w = [[self.imageResults[indexPath.row] valueForKeyPath:@"tbWidth"] floatValue];
+    CGFloat h = [[self.imageResults[indexPath.row] valueForKeyPath:@"tbHeight"] floatValue];
+    CGSize retval = CGSizeMake(w, h);
+    
+    return retval;
+}
+
+- (UIEdgeInsets)collectionView:
+(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsMake(10, 10, 10, 10);
+}
+
+- (void) doImageQuery:(NSString *)searchString fromIndex:(int)index {
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%@&start=%d", searchString, index]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        id results = [JSON valueForKeyPath:@"responseData.results"];
+        if ([results isKindOfClass:[NSArray class]]) {
+            [self.imageResults addObjectsFromArray:results];
+            [self.collectionView reloadData];
+        }
+    } failure:nil];
+    
+    [operation start];
+
+}
 @end
